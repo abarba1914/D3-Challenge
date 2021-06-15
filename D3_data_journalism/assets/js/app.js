@@ -54,11 +54,11 @@ function xScale(healthData, chosenXAxis) {
   }
 
 // Function used for updating y-scale var upon click on axis label.
-function yScale(data, chosenYAxis, height) {
+function yScale(healthData, chosenYAxis, height) {
   // Create scales.
   var yLinearScale = d3.scaleLinear()
-      .domain([d3.min(data, d => d[chosenYAxis]) * .8,
-          d3.max(data, d => d[chosenYAxis]) * 1.2])
+      .domain([d3.min(healthData, d => d[chosenYAxis]) * .8,
+          d3.max(healthData, d => d[chosenYAxis]) * 1.2])
       .range([height, 0]);
   return yLinearScale;
 }
@@ -91,7 +91,7 @@ function renderText(circletextGroup, newXScale, newYScale, chosenXAxis, chosenYA
       .attr("y", d => newYScale(d[chosenYAxis]));
   return circletextGroup;
 }
-// function used for updating circles group with new tooltip
+// function used for updating circles group
 function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup) {
 
     var xLabel;
@@ -121,16 +121,12 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup) {
       .attr("class", "d3-tip")
       .offset([120, -60])
       .html(function(d) {
-        if (chosenXAxis === "age") {
-          // All yAxis tooltip labels presented and formated as %.
-          // Display Age without format for xAxis.
+        if (chosenXAxis === "age") {        
           return (`${d.state}<hr>${xLabel} ${d[chosenXAxis]}<br>${yLabel}${d[chosenYAxis]}%`);
-          } else if (chosenXAxis !== "poverty" && chosenXAxis !== "age") {
-          // Display Income in dollars for xAxis.
+          } else if (chosenXAxis !== "poverty" && chosenXAxis !== "age") {         
           return (`${d.state}<hr>${xLabel}$${d[chosenXAxis]}<br>${yLabel}${d[chosenYAxis]}%`);
           } else {
-          // Display Poverty as percentage for xAxis.
-          return (`${d.state}<hr>${xLabel}${d[chosenXAxis]}%<br>${ylabel}${d[chosenYAxis]}%`);
+                  return (`${d.state}<hr>${xLabel}${d[chosenXAxis]}%<br>${yLabel}${d[chosenYAxis]}%`);
           }
   });
   
@@ -139,7 +135,6 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup) {
     circlesGroup.on("mouseover", function(data) {
       toolTip.show(data);
     })
-      // onmouseout event
       .on("mouseout", function(data, index) {
         toolTip.hide(data);
       });
@@ -153,16 +148,14 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup, textGroup) {
   return circlesGroup;
 }
 function makeResponsive() {
-  // Select div by id.
   var svgArea = d3.select("#scatter").select("svg");
-  // Clear SVG.
   if (!svgArea.empty()) {
       svgArea.remove();
   }
-  //SVG params.
+
   var svgHeight = window.innerHeight/1.2;
   var svgWidth = window.innerWidth/1.7;
-  // Margins.
+
   var margin = {
       top: 50,
       right: 50,
@@ -342,7 +335,6 @@ yLabelsGroup.selectAll("text")
     yLinearScale = yScale(healthData, chosenYAxis, height);
     // Update yAxis.
     yAxis = renderYAxes(yLinearScale, yAxis);
-    // Changes classes to change bold text.
     if (chosenYAxis === "healthcare") {
         healthcareLabel
             .classed("active", true)
@@ -387,5 +379,4 @@ console.log(err);
 }
 makeResponsive();
 // Event listener for window resize.
-// When the browser window is resized, makeResponsive() is called.
 d3.select(window).on("resize", makeResponsive);
